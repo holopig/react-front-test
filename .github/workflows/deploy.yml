@@ -23,7 +23,7 @@ jobs:
 
     - name: Deploy to server
       run: |
-        ssh www-data@64.226.100.15 <<EOF
+        ssh -T www-data@64.226.100.15 <<EOF
           cd /var/www/react-front
           git pull origin main  # Замените на нужную ветку
           npm install
