@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main  # Замените на нужную ветку
+  workflow_dispatch:  # Позволяет вручную запускать workflow с кнопки Deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 64.226.100.15 >> ~/.ssh/known_hosts
+
+    - name: Deploy to server
+      run: |
+        ssh www-data@64.226.100.15 <<EOF
+          cd /var/www/react-front
+          git pull origin main  # Замените на нужную ветку
+          npm install
+          npm run build
+        EOF
